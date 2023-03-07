@@ -37,6 +37,8 @@
       const check_out_order = document.getElementById('check_out_order');
       const form = document.getElementById("form");
       const messages = document.getElementById("messages");
+      var pending_order = []
+      var checked_out_order = []
 
       const createChat = (event, message) => {
             console.log('server_says', event)
@@ -109,15 +111,27 @@
                         order_cost : cost
                     }
 
-                    sessionStorage.setItem('user_order', JSON.stringify(data)  )
+                    sessionStorage.setItem('user_order', JSON.stringify(data) )
 
                     console.log(sessionStorage.getItem('user_order'))
-                    console.log('order_created', data);
+                    // console.log('order_created', data);
                     socket.emit('order_created', data);
                     createChat(event, `You order as been created and that will cost you ${cost}. you can click 98 to check out this order`)
+                    pending_order.push(data)
+                    console.log(pending_order)
             });
 
-            check_out_order
+            check_out_order.addEventListener('click', ()=> {
+
+              if(pending_order.length == 0 ){
+                createChat(event,`no order placed. click 1 to place an order`)
+              }
+              for(let i = 0; i < pending_order.length; i++){
+                checked_out_order.push(pending_order[i])
+                console.log(`your ${checked_out_order[i].order}has been checked out`)
+                 createChat(event,`your ${checked_out_order[i].order}` + ` has been checked out and bank account charged`)
+              }
+            })
         
 
       socket.on('connected', function(msg) {
