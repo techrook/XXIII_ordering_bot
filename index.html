@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>23 chicken's</title>
+  </head>
+  <body>
+    <div class="order">
+      <h1>23 chicken</h1>
+      <p>welcome to 23 chicken, where we serve the Jordan chicken.</p>
+
+      <div class="order-options">
+        <p id="bot">
+          Hey i'm XXIII , what do you want to do today. <br />
+          select 1 if you want to place order <br />
+          select 99 if you want to check out order <br />
+          select 98 if you want to see your order history <br />
+          select 97 if you want to see your current history <br />
+          select 0 if you want to cancel your order
+        </p>
+        <button id="place_order">1</button>
+        <button id="check_out_order">99</button>
+        <button id="order_history">98</button>
+        <button id="current_order">97</button>
+        <button id="cancel order">0</button>
+      </div>
+      <form id="form"></form>
+    </div>
+    <ul id="messages"></ul>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+      const socket = io('ws://localhost:2323');
+
+      const user_order = document.getElementById("place_order");
+      const check_out_order = document.getElementById('check_out_order');
+      const form = document.getElementById("form");
+      const messages = document.getElementById("messages");
+
+      const createChat = (event, message) => {
+            console.log('server_says', event)
+            const item = document.createElement('li');
+            item.textContent = message || event.message;
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+      user_order.addEventListener('click', () => {
+            console.log('placing an order')
+
+            const menu = document.createElement('ol')
+            menu.id = 'menu'
+            
+            const menu_content_1 = document.createElement('li')
+            menu_content_1.id = 'menu_content_1'
+            menu_content_1.innerText = 'veggie spice chicken'
+
+            const menu_content_2 = document.createElement('li')
+            menu_content_2.id = 'menu_content_2'
+            menu_content_2.innerText = 'italian chicken nuggets'
+
+            const menu_content_3 = document.createElement('li')
+            menu_content_3.id = 'menu_content_3'
+            menu_content_3.innerText = 'itachi spice chicken'
+
+            const menu_content_4 = document.createElement('li')
+            menu_content_4.id = 'menu_content_4'
+            menu_content_4.innerText = 'chicken wings'
+
+            menu.append(menu_content_1)
+            menu.append(menu_content_2)
+            menu.append(menu_content_3)
+            menu.append(menu_content_4) 
+            
+            const order = document.createElement('input');
+            order.id = 'order';
+            order.placeholder = 'enter order';
+            order.name = 'order';
+            order.required = true;
+
+                const quantity = document.createElement('input');
+                quantity.id = 'quantity';
+                quantity.placeholder = 'enter quantity';
+                quantity.name = 'quantity';
+                quantity.required = true;
+
+                const button = document.createElement('button');
+                button.innerText = 'place order'
+                
+                form.append(menu)
+                form.append(order)
+                form.append(quantity)
+                form.append(button);
+                
+        })
+
+        form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const order = document.getElementById('order');
+                const quantity = document.getElementById('quantity');
+                const cost = 9*parseInt(quantity.value)
+
+                    const data = {
+                        eventName: 'order_created',
+                        order: order.value,
+                        quantity: quantity.value,
+                        order_cost : cost
+                    }
+
+                    sessionStorage.setItem('user_order', JSON.stringify(data)  )
+
+                    console.log(sessionStorage.getItem('user_order'))
+                    console.log('order_created', data);
+                    socket.emit('order_created', data);
+                    createChat(event, `You order as been created and that will cost you ${cost}. you can click 98 to check out this order`)
+            });
+
+            check_out_order
+        
+
+      socket.on('connected', function(msg) {
+        console.log('Customer connected')
+      });
+    </script>
+  </body>
+</html>
