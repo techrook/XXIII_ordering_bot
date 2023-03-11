@@ -7,7 +7,7 @@
     <title>23 chicken's</title>
   </head>
   <body>
-    <div class="order">
+    <div class="container">
       <h1>23 chicken</h1>
       <p>welcome to 23 chicken, where we serve the Jordan chicken.</p>
 
@@ -24,27 +24,68 @@
         <button id="check_out_order">99</button>
         <button id="order_history">98</button>
         <button id="current_order">97</button>
-        <button id="cancel order">0</button>
+        <button id="cancel_order">0</button>
       </div>
       <form id="form"></form>
     </div>
-    <ul id="messages"></ul>
+    <div>
+      <div class="place_order_div">
+        <h3 id="place_order_head"></h3>
+        <ul id="place_order_messages"></ul>
+      </div>
+      <div class="check_out_order_div">
+        <h3 id="check_out_order_head"></h3>
+        <ul id="check_out_order_messages"></ul>
+      </div>
+      <div class="order_history_div">
+        <h3 id="order_history_head"></h3>
+        <ul id="order_history_messages"></ul>
+      </div>
+    
+    
+    <ul id="current_order_messages"></ul>
+    <ul id="cancel_order_messages"></ul>
+    </div>
+    
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
       const socket = io('ws://localhost:2323');
 
       const user_order = document.getElementById("place_order");
       const check_out_order = document.getElementById('check_out_order');
+      const order_history = document.getElementById('order_history')
       const form = document.getElementById("form");
-      const messages = document.getElementById("messages");
+      const place_order_messages = document.getElementById("place_order_messages");
+      const place_order_head = document.getElementById("place_order_head")
+      const check_out_order_head = document.getElementById("check_out_order_head")
+      const check_out_order_messages = document.getElementById("check_out_order_messages")
+      const order_history_head = document.getElementById("order_history_head")
+      const order_history_messages = document.getElementById("order_history_messages")
       var pending_order = []
       var checked_out_order = []
+      var all_orders = []
 
-      const createChat = (event, message) => {
-            console.log('server_says', event)
+      const placeOrderChat = (event, message, head) => {
             const item = document.createElement('li');
             item.textContent = message || event.message;
-            messages.appendChild(item);
+            place_order_head.innerText = head
+            place_order_messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        const checkOutOrderChat = (event ,message, head) => {
+            const item = document.createElement('li');
+            item.textContent = message || event.message;
+            check_out_order_head.innerText = head
+            check_out_order_messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        const orderHistoryChat = (event ,message, head) => {
+            const item = document.createElement('li');
+            item.textContent = message || event.message;
+            order_history_head.innerText = head
+            order_history_messages.appendChild(item);
             window.scrollTo(0, document.body.scrollHeight);
         }
 
@@ -98,7 +139,7 @@
         })
 
         form.addEventListener('submit', function (e) {
-                e.preventDefault();
+                e.preventDefault();               
 
                 const order = document.getElementById('order');
                 const quantity = document.getElementById('quantity');
@@ -115,22 +156,38 @@
 
                     console.log(sessionStorage.getItem('user_order'))
                     // console.log('order_created', data);
-                    socket.emit('order_created', data);
-                    createChat(event, `You order as been created and that will cost you ${cost}. you can click 98 to check out this order`)
+                    socket.emit('order_created', data, (response) =>{
+                      placeOrderChat(event, response.message, 'Orders')
+                    });
+                    
                     pending_order.push(data)
-                    console.log(pending_order)
+                    
             });
 
             check_out_order.addEventListener('click', ()=> {
 
               if(pending_order.length == 0 ){
-                createChat(event,`no order placed. click 1 to place an order`)
+                checkOutOrderChat(event,`no order placed. click 1 to place an order`,'checked out orders')
               }
               for(let i = 0; i < pending_order.length; i++){
                 checked_out_order.push(pending_order[i])
-                console.log(`your ${checked_out_order[i].order}has been checked out`)
-                 createChat(event,`your ${checked_out_order[i].order}` + ` has been checked out and bank account charged`)
+                socket.emit('order checked out', checked_out_order[i], (response) =>{
+                checkOutOrderChat(event, response.message, 'checked out orders')
+                    });
               }
+            })
+
+            order_history.addEventListener('click', ()=>{
+
+              var history = JSON.parse(sessionStorage.getItem('user_order')).order
+          
+                all_orders.push(history)
+                console.log(JSON.parse(sessionStorage.getItem('user_order')).order)
+                
+
+                socket.emit('order history', all_orders, (response) =>{
+                orderHistoryChat(event, response.message, ' orders history' )
+                    });
             })
         
 
