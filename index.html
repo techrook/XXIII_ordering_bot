@@ -41,158 +41,202 @@
         <h3 id="order_history_head"></h3>
         <ul id="order_history_messages"></ul>
       </div>
-    
-    
-    <ul id="current_order_messages"></ul>
-    <ul id="cancel_order_messages"></ul>
+
+      <div class="current_order_div">
+        <h3 id="current_order_head"></h3>
+        <ul id="current_order_messages"></ul>
+      </div>
+      
+      <ul id="cancel_order_messages"></ul>
     </div>
-    
+
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
-      const socket = io('wss://shinobi-chicken.onrender.com');
+      // const socket = io("wss://shinobi-chicken.onrender.com");
+      const socket = io("ws://localhost:5000");
 
       const user_order = document.getElementById("place_order");
-      const check_out_order = document.getElementById('check_out_order');
-      const order_history = document.getElementById('order_history')
+      const check_out_order = document.getElementById("check_out_order");
+      const order_history = document.getElementById("order_history");
+      const current_order = document.getElementById('current_order')
       const form = document.getElementById("form");
-      const place_order_messages = document.getElementById("place_order_messages");
-      const place_order_head = document.getElementById("place_order_head")
-      const check_out_order_head = document.getElementById("check_out_order_head")
-      const check_out_order_messages = document.getElementById("check_out_order_messages")
-      const order_history_head = document.getElementById("order_history_head")
-      const order_history_messages = document.getElementById("order_history_messages")
-      var pending_order = []
-      var checked_out_order = []
-      var all_orders = []
+      const place_order_messages = document.getElementById(
+        "place_order_messages"
+      );
+      const place_order_head = document.getElementById("place_order_head");
+      const check_out_order_head = document.getElementById(
+        "check_out_order_head"
+      );
+      const check_out_order_messages = document.getElementById(
+        "check_out_order_messages"
+      );
+      const order_history_head = document.getElementById("order_history_head");
+      const order_history_messages = document.getElementById(
+        "order_history_messages"
+      );
+      const current_order_head = document.getElementById("current_order_head");
+      const current_order_messages = document.getElementById("current_order_messages");
+      var pending_order = [];
+      var checked_out_order = [];
+      var all_orders = [];
 
       const placeOrderChat = (event, message, head) => {
-            const item = document.createElement('li');
-            item.textContent = message || event.message;
-            place_order_head.innerText = head
-            place_order_messages.appendChild(item);
-            window.scrollTo(0, document.body.scrollHeight);
+        const item = document.createElement("li");
+        item.textContent = message || event.message;
+        place_order_head.innerText = head;
+        place_order_messages.append(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      };
+
+      const checkOutOrderChat = (event, message, head) => {
+        const item = document.createElement("li");
+        item.textContent = message || event.message;
+        check_out_order_head.innerText = head;
+        check_out_order_messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      };
+
+      const currentOrderChat = (event, message, head) => {
+        const item = document.createElement("li");
+        item.textContent = message || event.message;
+        current_order_head.innerText = head;
+        current_order_messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      };
+
+      const orderHistoryChat = (event, message, head) => {
+        const item = document.createElement("li");
+        item.textContent = message || event.message;
+        order_history_head.innerText = head;
+        order_history_messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      };
+
+      user_order.addEventListener("click", () => {
+        console.log("placing an order");
+
+        const menu = document.createElement("ol");
+        menu.id = "menu";
+
+        const menu_content_1 = document.createElement("li");
+        menu_content_1.id = "menu_content_1";
+        menu_content_1.innerText = "veggie spice chicken";
+
+        const menu_content_2 = document.createElement("li");
+        menu_content_2.id = "menu_content_2";
+        menu_content_2.innerText = "italian chicken nuggets";
+
+        const menu_content_3 = document.createElement("li");
+        menu_content_3.id = "menu_content_3";
+        menu_content_3.innerText = "itachi spice chicken";
+
+        const menu_content_4 = document.createElement("li");
+        menu_content_4.id = "menu_content_4";
+        menu_content_4.innerText = "chicken wings";
+
+        menu.append(menu_content_1);
+        menu.append(menu_content_2);
+        menu.append(menu_content_3);
+        menu.append(menu_content_4);
+
+        const order = document.createElement("input");
+        order.id = "order";
+        order.placeholder = "enter order";
+        order.name = "order";
+        order.required = true;
+
+        const quantity = document.createElement("input");
+        quantity.id = "quantity";
+        quantity.placeholder = "enter quantity";
+        quantity.name = "quantity";
+        quantity.required = true;
+
+        const button = document.createElement("button");
+        button.innerText = "place order";
+
+        form.append(menu);
+        form.append(order);
+        form.append(quantity);
+        form.append(button);
+      });
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const order = document.getElementById("order");
+        const quantity = document.getElementById("quantity");
+        const cost = 9 * parseInt(quantity.value);
+
+        const data = {
+          eventName: "order_created",
+          order: order.value,
+          quantity: quantity.value,
+          order_cost: cost,
+        };
+
+        sessionStorage.setItem("user_order", JSON.stringify(data));
+
+        console.log(sessionStorage.getItem("user_order"));
+        // console.log('order_created', data);
+        socket.emit("order_created", data, (response) => {
+          placeOrderChat(event, response.message, "Orders");
+        });
+
+        pending_order.push(data);
+        all_orders.push(data)
+      });
+
+      check_out_order.addEventListener("click", () => {
+        if (pending_order.length == 0) {
+          checkOutOrderChat(
+            event,
+            `no current  order. click 1 to place an order`,
+            "checked out orders"
+          );
+        }
+        for (let i = 0; i < pending_order.length; i++) {
+          checked_out_order.push(pending_order[i]);
+          socket.emit("order checked out", checked_out_order[i], (response) => {
+            checkOutOrderChat(event, response.message, "checked out orders");
+          });
+        }
+        pending_order.splice(0, pending_order.length)
+      });
+
+      order_history.addEventListener("click", () => {
+
+        if (all_orders.length == 0) {
+          orderHistoryChat(
+            event,
+            `order history empty. click 1 to place an order`,
+            " orders history"
+          );
         }
 
-        const checkOutOrderChat = (event ,message, head) => {
-            const item = document.createElement('li');
-            item.textContent = message || event.message;
-            check_out_order_head.innerText = head
-            check_out_order_messages.appendChild(item);
-            window.scrollTo(0, document.body.scrollHeight);
+        for (let i = 0; i < all_orders.length; i++) {
+          socket.emit("order history", all_orders[i], (response) => {
+          orderHistoryChat(event, response.message, " orders history");
+        });
         }
+      });
 
-        const orderHistoryChat = (event ,message, head) => {
-            const item = document.createElement('li');
-            item.textContent = message || event.message;
-            order_history_head.innerText = head
-            order_history_messages.appendChild(item);
-            window.scrollTo(0, document.body.scrollHeight);
+      current_order.addEventListener('click', ()=>{
+        if (pending_order.length == 0) {
+          currentOrderChat(
+            event,
+            `no order placed. click 1 to place an order`,
+            "current order notification"
+          );
         }
+        for (let i = 0; i < pending_order.length; i++) {
+          socket.emit("current order notification", pending_order[i], (response) => {
+            currentOrderChat(event, response.message, " current order notification");
+        });
+      }
+      })
 
-      user_order.addEventListener('click', () => {
-            console.log('placing an order')
-
-            const menu = document.createElement('ol')
-            menu.id = 'menu'
-            
-            const menu_content_1 = document.createElement('li')
-            menu_content_1.id = 'menu_content_1'
-            menu_content_1.innerText = 'veggie spice chicken'
-
-            const menu_content_2 = document.createElement('li')
-            menu_content_2.id = 'menu_content_2'
-            menu_content_2.innerText = 'italian chicken nuggets'
-
-            const menu_content_3 = document.createElement('li')
-            menu_content_3.id = 'menu_content_3'
-            menu_content_3.innerText = 'itachi spice chicken'
-
-            const menu_content_4 = document.createElement('li')
-            menu_content_4.id = 'menu_content_4'
-            menu_content_4.innerText = 'chicken wings'
-
-            menu.append(menu_content_1)
-            menu.append(menu_content_2)
-            menu.append(menu_content_3)
-            menu.append(menu_content_4) 
-            
-            const order = document.createElement('input');
-            order.id = 'order';
-            order.placeholder = 'enter order';
-            order.name = 'order';
-            order.required = true;
-
-                const quantity = document.createElement('input');
-                quantity.id = 'quantity';
-                quantity.placeholder = 'enter quantity';
-                quantity.name = 'quantity';
-                quantity.required = true;
-
-                const button = document.createElement('button');
-                button.innerText = 'place order'
-                
-                form.append(menu)
-                form.append(order)
-                form.append(quantity)
-                form.append(button);
-                
-        })
-
-        form.addEventListener('submit', function (e) {
-                e.preventDefault();               
-
-                const order = document.getElementById('order');
-                const quantity = document.getElementById('quantity');
-                const cost = 9*parseInt(quantity.value)
-
-                    const data = {
-                        eventName: 'order_created',
-                        order: order.value,
-                        quantity: quantity.value,
-                        order_cost : cost
-                    }
-
-                    sessionStorage.setItem('user_order', JSON.stringify(data) )
-
-                    console.log(sessionStorage.getItem('user_order'))
-                    // console.log('order_created', data);
-                    socket.emit('order_created', data, (response) =>{
-                      placeOrderChat(event, response.message, 'Orders')
-                    });
-                    
-                    pending_order.push(data)
-                    
-            });
-
-            check_out_order.addEventListener('click', ()=> {
-
-              if(pending_order.length == 0 ){
-                checkOutOrderChat(event,`no order placed. click 1 to place an order`,'checked out orders')
-              }
-              for(let i = 0; i < pending_order.length; i++){
-                checked_out_order.push(pending_order[i])
-                socket.emit('order checked out', checked_out_order[i], (response) =>{
-                checkOutOrderChat(event, response.message, 'checked out orders')
-                    });
-              }
-            })
-
-            order_history.addEventListener('click', ()=>{
-
-              var history = JSON.parse(sessionStorage.getItem('user_order')).order
-          
-                all_orders.push(history)
-                console.log(JSON.parse(sessionStorage.getItem('user_order')).order)
-                
-
-                socket.emit('order history', all_orders, (response) =>{
-                orderHistoryChat(event, response.message, ' orders history' )
-                    });
-            })
-        
-
-      socket.on('connected', function(msg) {
-        console.log('Customer connected')
+      socket.on("connected", function (msg) {
+        console.log("Customer connected");
       });
     </script>
   </body>
