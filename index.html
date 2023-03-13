@@ -46,19 +46,23 @@
         <h3 id="current_order_head"></h3>
         <ul id="current_order_messages"></ul>
       </div>
-      
-      <ul id="cancel_order_messages"></ul>
+
+      <div class="cancel_order_div">
+        <h3 id="cancel_order_head"></h3>
+        <ul id="cancel_order_messages"></ul>
+      </div>
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
-      const socket = io("wss://shinobi-chicken.onrender.com");
-      // const socket = io("ws://localhost:5000");
+      // const socket = io("wss://shinobi-chicken.onrender.com");
+      const socket = io("ws://localhost:5000");
 
       const user_order = document.getElementById("place_order");
       const check_out_order = document.getElementById("check_out_order");
       const order_history = document.getElementById("order_history");
-      const current_order = document.getElementById('current_order')
+      const current_order = document.getElementById("current_order");
+      const cancel_order = document.getElementById("cancel_order");
       const form = document.getElementById("form");
       const place_order_messages = document.getElementById(
         "place_order_messages"
@@ -75,7 +79,13 @@
         "order_history_messages"
       );
       const current_order_head = document.getElementById("current_order_head");
-      const current_order_messages = document.getElementById("current_order_messages");
+      const current_order_messages = document.getElementById(
+        "current_order_messages"
+      );
+      const cancel_order_head = document.getElementById("cancel_order_head");
+      const cancel_order_messages = document.getElementById(
+        "cancel_order_messages"
+      );
       var pending_order = [];
       var checked_out_order = [];
       var all_orders = [];
@@ -84,7 +94,7 @@
         const item = document.createElement("li");
         item.textContent = message || event.message;
         place_order_head.innerText = head;
-        place_order_messages.append(item);
+        place_order_messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       };
 
@@ -109,6 +119,14 @@
         item.textContent = message || event.message;
         order_history_head.innerText = head;
         order_history_messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      };
+
+      const cancelOrderChat = (event, message, head) => {
+        const item = document.createElement("li");
+        item.textContent = message || event.message;
+        cancel_order_head.innerText = head;
+        cancel_order_messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       };
 
@@ -183,7 +201,6 @@
         });
 
         pending_order.push(data);
-        all_orders.push(data)
       });
 
       check_out_order.addEventListener("click", () => {
@@ -196,15 +213,15 @@
         }
         for (let i = 0; i < pending_order.length; i++) {
           checked_out_order.push(pending_order[i]);
+          all_orders.push(pending_order[i]);
           socket.emit("order checked out", checked_out_order[i], (response) => {
             checkOutOrderChat(event, response.message, "checked out orders");
           });
         }
-        pending_order.splice(0, pending_order.length)
+        pending_order.splice(0, pending_order.length);
       });
 
       order_history.addEventListener("click", () => {
-
         if (all_orders.length == 0) {
           orderHistoryChat(
             event,
@@ -215,12 +232,12 @@
 
         for (let i = 0; i < all_orders.length; i++) {
           socket.emit("order history", all_orders[i], (response) => {
-          orderHistoryChat(event, response.message, " orders history");
-        });
+            orderHistoryChat(event, response.message, " orders history");
+          });
         }
       });
 
-      current_order.addEventListener('click', ()=>{
+      current_order.addEventListener("click", () => {
         if (pending_order.length == 0) {
           currentOrderChat(
             event,
@@ -229,11 +246,43 @@
           );
         }
         for (let i = 0; i < pending_order.length; i++) {
-          socket.emit("current order notification", pending_order[i], (response) => {
-            currentOrderChat(event, response.message, " current order notification");
-        });
-      }
-      })
+          socket.emit(
+            "current order notification",
+            pending_order[i],
+            (response) => {
+              currentOrderChat(
+                event,
+                response.message,
+                " current order notification"
+              );
+            }
+          );
+        }
+      });
+
+      cancel_order.addEventListener("click", () => {
+        if (pending_order.length == 0) {
+          cancelOrderChat(
+            event,
+            `no pending order`,
+            "cancel order notification"
+          );
+        }
+        for (let i = 0; i < pending_order.length; i++) {
+          socket.emit(
+            "cancel order notification",
+            pending_order[i],
+            (response) => {
+              cancelOrderChat(
+                event,
+                response.message,
+                " cancel order notification"
+              );
+            }
+          );
+        }
+        pending_order.splice(0, pending_order.length);
+      });
 
       socket.on("connected", function (msg) {
         console.log("Customer connected");
