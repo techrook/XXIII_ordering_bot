@@ -49,18 +49,23 @@ io.on("connection", (socket) => {
       message: `you ordered ${all_orders.order}`,
     });
   });
-  
+
   socket.on("current order notification", (pending_order, callback) => {
     console.log("order history", pending_order);
-  
+
     callback({
       status: "ok",
       message: `you ordered ${pending_order.order}`,
     });
   });
+
+  socket.on("cancel order notification", (pending_order, callback) => {
+    callback({
+      status: "ok",
+      message: ` ${pending_order.order} order has been  canceled`,
+    });
+  });
 });
-
-
 
 server.listen(5000, () => {
   console.log("listening on *:5000");
