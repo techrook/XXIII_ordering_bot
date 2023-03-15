@@ -9,6 +9,7 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 app.use(cors());
+app.use(express.static(__dirname +'/public/'))
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
@@ -26,7 +27,7 @@ io.on("connection", (socket) => {
 
     callback({
       status: "ok",
-      message: `You order as been created and that will cost you $${data.order_cost}. you can click 99 to check out this order`,
+      message: `order placed  that will cost you $${data.order_cost}. click 99 to check out this order`,
     });
   });
 
@@ -63,6 +64,13 @@ io.on("connection", (socket) => {
     callback({
       status: "ok",
       message: ` ${pending_order.order} order has been  canceled`,
+    });
+  });
+
+  socket.on("user joined", (name, callback) => {
+    callback({
+      status: "ok",
+      message: ` welcome ${name} to shinobi chicken`,
     });
   });
 });

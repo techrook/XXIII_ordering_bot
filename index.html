@@ -4,179 +4,357 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>23 chicken's</title>
+    <link rel="stylesheet" src="/public/style.css">
+    <style>
+      *{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+}
+.head{
+  display: flex;
+    background-color: blue;
+    padding: 2em;
+  }
+  .bot_img{
+    border-radius: 100%;
+    height: 50px;
+  }
+  .order-options{
+    padding: 20px;
+    position: relative;
+    margin-left: 20px;
+    margin-bottom: 10px;
+    background-color: #A8DDFD;
+    width: 50%;
+    text-align: left;
+    font: 400 .9em 'Open Sans', sans-serif;
+    border: 1px solid #97C6E3;
+    border-radius: 10px;
+  }
+  #welcome{
+    padding: 20px;
+    position: relative;
+    margin-left: 20px;
+    margin-bottom: 10px;
+    background-color: #A8DDFD;
+    width: 50%;
+    text-align: left;
+    font: 400 .9em 'Open Sans', sans-serif;
+    border: 1px solid #97C6E3;
+    border-radius: 10px;
+    margin-top:20px; 
+  }
+  #form{
+    padding: 20px;
+    position: relative;
+    margin-left: 20px;
+    margin-bottom: 10px;
+    background-color: #A8DDFD;
+    width: 50%;
+    text-align: left;
+    font: 400 .9em 'Open Sans', sans-serif;
+    border: 1px solid #97C6E3;
+    border-radius: 10px;
+    margin-top:20px;
+  }
+  #place_order_messages li{
+    list-style-type: none;
+    padding: 20px;
+    position: relative;
+    margin-left: 20px;
+    margin-bottom: 10px;
+    background-color: #A8DDFD;
+    width: 50%;
+    text-align: left;
+    font: 400 .9em 'Open Sans', sans-serif;
+    border: 1px solid #97C6E3;
+    border-radius: 10px;
+    margin-top:20px;
+  }
+  #check_out_order_messages{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  #check_out_order_messages li{
+    
+    list-style-type: none;
+    padding: 20px;
+    margin-left: 20px;
+    margin-bottom: 10px;
+    background-color: #A8DDFD;
+    width: 50%;
+    text-align: left;
+    font: 400 .9em 'Open Sans', sans-serif;
+    border: 1px solid #97C6E3;
+    border-radius: 10px;
+    margin-top:20px;
+  }
+  #user_response_messages{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  #user_response_messages li{
+    
+    list-style-type: none;
+    margin-bottom: 10px;
+    margin-left: calc(100% - 240px);
+    padding: 10px;
+    background-color: #f8e896;
+    width: 200px;
+    height: 50px;
+    text-align: left;
+    font: 400 .9em 'Open Sans', sans-serif;
+    border: 1px solid #dfd087;
+    border-radius: 10px;
+  }
+  #user_message{
+    background: rgba(0, 0, 0, 0.15);
+            padding: 0.25rem;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            height: 3rem;
+            box-sizing: border-box;
+            backdrop-filter: blur(10px);
+  }
+  #user_input{
+    border: none;
+            padding: 0 1rem;
+            flex-grow: 1;
+            border-radius: 2rem;
+            margin: 0.25rem;
+  }
+  .send_text{
+    background: #333;
+            border: none;
+            padding: 0 1rem;
+            margin: 0.25rem;
+            border-radius: 3px;
+            outline: none;
+            color: #fff;
+  }
+    </style>
+    <title>shinobi-chicken</title>
   </head>
   <body>
-    <div class="container">
-      <h1>23 chicken</h1>
-      <p>welcome to 23 chicken, where we serve the Jordan chicken.</p>
+      <div class="head">
+        <img class="bot_img" src="/bot.png" alt=" bot chat head">
+        <header> <h1>shinobi-chicken</h1></header>
+      </div>
+      
+      <p id="welcome"></p>
 
       <div class="order-options">
         <p id="bot">
           Hey i'm XXIII , what do you want to do today. <br />
-          select 1 if you want to place order <br />
-          select 99 if you want to check out order <br />
-          select 98 if you want to see your order history <br />
-          select 97 if you want to see your current history <br />
-          select 0 if you want to cancel your order
+          enter 1 if you want to place order <br />
+          enter 99 if you want to check out order <br />
+          enter 98 if you want to see your order history <br />
+          enter 97 if you want to see your current history <br />
+          enter 0 if you want to cancel your order
         </p>
-        <button id="place_order">1</button>
-        <button id="check_out_order">99</button>
-        <button id="order_history">98</button>
-        <button id="current_order">97</button>
-        <button id="cancel_order">0</button>
       </div>
       <form id="form"></form>
-    </div>
-    <div>
-      <div class="place_order_div">
-        <h3 id="place_order_head"></h3>
-        <ul id="place_order_messages"></ul>
-      </div>
-      <div class="check_out_order_div">
-        <h3 id="check_out_order_head"></h3>
+
+      <div>
         <ul id="check_out_order_messages"></ul>
+        <ul id="user_response_messages"></ul>
       </div>
-      <div class="order_history_div">
-        <h3 id="order_history_head"></h3>
-        <ul id="order_history_messages"></ul>
-      </div>
-
-      <div class="current_order_div">
-        <h3 id="current_order_head"></h3>
-        <ul id="current_order_messages"></ul>
-      </div>
-
-      <div class="cancel_order_div">
-        <h3 id="cancel_order_head"></h3>
-        <ul id="cancel_order_messages"></ul>
-      </div>
+        
+        
+        
+    <div>
+      <form id="user_message">
+        <input type="text" id="user_input" name="user_input" placeholder="what do yo say ?">
+        <button class="send_text">send</button>
+      </form>
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
-      const socket = io("wss://shinobi-chicken.onrender.com");
-      // const socket = io("ws://localhost:5000");
+      const socket = io("wss://shinobi-chicken.onrender.com"); // for production
+      // const socket = io("ws://localhost:5000"); // for local server
 
+      const welcome = document.getElementById('welcome')
       const user_order = document.getElementById("place_order");
-      const check_out_order = document.getElementById("check_out_order");
-      const order_history = document.getElementById("order_history");
-      const current_order = document.getElementById("current_order");
-      const cancel_order = document.getElementById("cancel_order");
       const form = document.getElementById("form");
-      const place_order_messages = document.getElementById(
-        "place_order_messages"
-      );
-      const place_order_head = document.getElementById("place_order_head");
+      const user_message = document.getElementById("user_message");
       const check_out_order_head = document.getElementById(
         "check_out_order_head"
       );
       const check_out_order_messages = document.getElementById(
         "check_out_order_messages"
       );
-      const order_history_head = document.getElementById("order_history_head");
-      const order_history_messages = document.getElementById(
-        "order_history_messages"
-      );
-      const current_order_head = document.getElementById("current_order_head");
-      const current_order_messages = document.getElementById(
-        "current_order_messages"
-      );
-      const cancel_order_head = document.getElementById("cancel_order_head");
-      const cancel_order_messages = document.getElementById(
-        "cancel_order_messages"
-      );
+      const user_response_messages = document.getElementById('user_response_messages')
       var pending_order = [];
       var checked_out_order = [];
       var all_orders = [];
 
-      const placeOrderChat = (event, message, head) => {
+      const placeOrderChat = (event, message) => {
         const item = document.createElement("li");
         item.textContent = message || event.message;
-        place_order_head.innerText = head;
         place_order_messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       };
 
-      const checkOutOrderChat = (event, message, head) => {
+      const checkOutOrderChat = (event, message) => {
         const item = document.createElement("li");
         item.textContent = message || event.message;
-        check_out_order_head.innerText = head;
         check_out_order_messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       };
 
-      const currentOrderChat = (event, message, head) => {
+      const welcomeMessage = (event, message) => {
+        welcome.textContent = message || event.message;
+      };
+
+      const userMessage = (event, message) => {
         const item = document.createElement("li");
         item.textContent = message || event.message;
-        current_order_head.innerText = head;
-        current_order_messages.appendChild(item);
+        user_response_messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       };
 
-      const orderHistoryChat = (event, message, head) => {
-        const item = document.createElement("li");
-        item.textContent = message || event.message;
-        order_history_head.innerText = head;
-        order_history_messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-      };
 
-      const cancelOrderChat = (event, message, head) => {
-        const item = document.createElement("li");
-        item.textContent = message || event.message;
-        cancel_order_head.innerText = head;
-        cancel_order_messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-      };
+      user_message.addEventListener("submit", function(e){
+        e.preventDefault();
 
-      user_order.addEventListener("click", () => {
-        console.log("placing an order");
+        const user_input = document.getElementById('user_input')
 
-        const menu = document.createElement("ol");
-        menu.id = "menu";
+        if(user_input.value == '0'){
+          userMessage('user cancel order', `cancel order`)
 
-        const menu_content_1 = document.createElement("li");
-        menu_content_1.id = "menu_content_1";
-        menu_content_1.innerText = "veggie spice chicken";
+        if (pending_order.length == 0) {
+          checkOutOrderChat(
+            event,
+            `no pending order`
+          );
+        }
+        for (let i = 0; i < pending_order.length; i++) {
+          socket.emit(
+            "cancel order notification",
+            pending_order[i],
+            (response) => {
+              checkOutOrderChat(
+                event,
+                response.message
+              );
+            }
+          );
+        }
+        pending_order.splice(0, pending_order.length);
+        }
 
-        const menu_content_2 = document.createElement("li");
-        menu_content_2.id = "menu_content_2";
-        menu_content_2.innerText = "italian chicken nuggets";
+        if(user_input.value == '1'){
+          userMessage("placing an order", "place order");
 
-        const menu_content_3 = document.createElement("li");
-        menu_content_3.id = "menu_content_3";
-        menu_content_3.innerText = "itachi spice chicken";
+const menu = document.createElement("ol");
+menu.id = "menu";
 
-        const menu_content_4 = document.createElement("li");
-        menu_content_4.id = "menu_content_4";
-        menu_content_4.innerText = "chicken wings";
+const menu_content_1 = document.createElement("li");
+menu_content_1.id = "menu_content_1";
+menu_content_1.innerText = "veggie spice chicken";
 
-        menu.append(menu_content_1);
-        menu.append(menu_content_2);
-        menu.append(menu_content_3);
-        menu.append(menu_content_4);
+const menu_content_2 = document.createElement("li");
+menu_content_2.id = "menu_content_2";
+menu_content_2.innerText = "italian chicken nuggets";
 
-        const order = document.createElement("input");
-        order.id = "order";
-        order.placeholder = "enter order";
-        order.name = "order";
-        order.required = true;
+const menu_content_3 = document.createElement("li");
+menu_content_3.id = "menu_content_3";
+menu_content_3.innerText = "itachi spice chicken";
 
-        const quantity = document.createElement("input");
-        quantity.id = "quantity";
-        quantity.placeholder = "enter quantity";
-        quantity.name = "quantity";
-        quantity.required = true;
+const menu_content_4 = document.createElement("li");
+menu_content_4.id = "menu_content_4";
+menu_content_4.innerText = "chicken wings";
 
-        const button = document.createElement("button");
-        button.innerText = "place order";
+menu.append(menu_content_1);
+menu.append(menu_content_2);
+menu.append(menu_content_3);
+menu.append(menu_content_4);
 
-        form.append(menu);
-        form.append(order);
-        form.append(quantity);
-        form.append(button);
-      });
+const order = document.createElement("input");
+order.id = "order";
+order.placeholder = "enter order";
+order.name = "order";
+order.required = true;
+
+const quantity = document.createElement("input");
+quantity.id = "quantity";
+quantity.placeholder = "enter quantity";
+quantity.name = "quantity";
+quantity.required = true;
+
+const button = document.createElement("button");
+button.innerText = "place order";
+
+form.append(menu);
+form.append(order);
+form.append(quantity);
+form.append(button);
+        }
+        if(user_input.value == '99'){
+          userMessage("check out", "check out my order");
+          if (pending_order.length == 0) {
+          checkOutOrderChat(
+            event,
+            `no current  order. click 1 to place an order`
+            
+          );
+        }
+        for (let i = 0; i < pending_order.length; i++) {
+          checked_out_order.push(pending_order[i]);
+          all_orders.push(pending_order[i]);
+          socket.emit("order checked out", checked_out_order[i], (response) => {
+            checkOutOrderChat(event, response.message);
+          });
+        }
+        pending_order.splice(0, pending_order.length);
+        }
+
+        if(user_input.value == '98'){
+          userMessage("my order history", "show my order history");
+          if (all_orders.length == 0) {
+            checkOutOrderChat(
+            event,
+            `order history empty. click 1 to place an order`
+          );
+        }
+
+        for (let i = 0; i < all_orders.length; i++) {
+          socket.emit("order history", all_orders[i], (response) => {
+            checkOutOrderChat(event, response.message, " orders history");
+          });
+        }
+        }
+        if(user_input.value == '97'){
+          userMessage("current order", "my current order");
+          if (pending_order.length == 0) {
+            checkOutOrderChat(
+            event,
+            `no order placed. click 1 to place an order`,
+            "current order notification"
+          );
+        }
+        for (let i = 0; i < pending_order.length; i++) {
+          socket.emit(
+            "current order notification",
+            pending_order[i],
+            (response) => {
+              checkOutOrderChat(
+                event,
+                response.message,
+                " current order notification"
+              );
+            }
+          );
+        }
+      }
+        
+      })
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -197,92 +375,21 @@
         console.log(sessionStorage.getItem("user_order"));
         // console.log('order_created', data);
         socket.emit("order_created", data, (response) => {
-          placeOrderChat(event, response.message, "Orders");
+          checkOutOrderChat(event, response.message);
         });
 
         pending_order.push(data);
       });
 
-      check_out_order.addEventListener("click", () => {
-        if (pending_order.length == 0) {
-          checkOutOrderChat(
-            event,
-            `no current  order. click 1 to place an order`,
-            "checked out orders"
-          );
-        }
-        for (let i = 0; i < pending_order.length; i++) {
-          checked_out_order.push(pending_order[i]);
-          all_orders.push(pending_order[i]);
-          socket.emit("order checked out", checked_out_order[i], (response) => {
-            checkOutOrderChat(event, response.message, "checked out orders");
-          });
-        }
-        pending_order.splice(0, pending_order.length);
-      });
+              window.addEventListener('load', () => {
+            const name = prompt('Enter your name: ')
 
-      order_history.addEventListener("click", () => {
-        if (all_orders.length == 0) {
-          orderHistoryChat(
-            event,
-            `order history empty. click 1 to place an order`,
-            " orders history"
-          );
-        }
+            sessionStorage.setItem("user", JSON.stringify(name));
+            socket.emit('user joined', name, (response)=> {
+              welcomeMessage(event, response.message)
+            })
 
-        for (let i = 0; i < all_orders.length; i++) {
-          socket.emit("order history", all_orders[i], (response) => {
-            orderHistoryChat(event, response.message, " orders history");
-          });
-        }
-      });
-
-      current_order.addEventListener("click", () => {
-        if (pending_order.length == 0) {
-          currentOrderChat(
-            event,
-            `no order placed. click 1 to place an order`,
-            "current order notification"
-          );
-        }
-        for (let i = 0; i < pending_order.length; i++) {
-          socket.emit(
-            "current order notification",
-            pending_order[i],
-            (response) => {
-              currentOrderChat(
-                event,
-                response.message,
-                " current order notification"
-              );
-            }
-          );
-        }
-      });
-
-      cancel_order.addEventListener("click", () => {
-        if (pending_order.length == 0) {
-          cancelOrderChat(
-            event,
-            `no pending order`,
-            "cancel order notification"
-          );
-        }
-        for (let i = 0; i < pending_order.length; i++) {
-          socket.emit(
-            "cancel order notification",
-            pending_order[i],
-            (response) => {
-              cancelOrderChat(
-                event,
-                response.message,
-                " cancel order notification"
-              );
-            }
-          );
-        }
-        pending_order.splice(0, pending_order.length);
-      });
+          })
 
       socket.on("connected", function (msg) {
         console.log("Customer connected");
