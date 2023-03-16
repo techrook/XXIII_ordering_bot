@@ -70,7 +70,12 @@ io.on("connection", (socket) => {
   socket.on("user joined", (name, callback) => {
     callback({
       status: "ok",
-      message: ` welcome ${name} to shinobi chicken`,
+      message: ` welcome ${name} to shinobi chicken. i am XXIII and i am at your service, what do you want to do today?
+      enter 1 if you want to place order,
+      enter 99 if you want to check out order,
+      enter 98 if you want to see your order history,
+      enter 97 if you want to see your current history,
+      enter 0 if you want to cancel your order.`,
     });
   });
 });
