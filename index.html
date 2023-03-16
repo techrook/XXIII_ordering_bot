@@ -123,8 +123,7 @@
       <header><h1>shinobi-chicken</h1></header>
     </div>
 
-    <div class="order-options">
-    </div>
+    <div class="order-options"></div>
     <div id="chat"></div>
 
     <div>
@@ -148,7 +147,7 @@
       const socket = io("wss://shinobi-chicken.onrender.com"); // for production
       // const socket = io("ws://localhost:5000"); // for local server
 
-      const chat = document.getElementById("chat")
+      const chat = document.getElementById("chat");
       const form = document.getElementById("form");
       const user_message = document.getElementById("user_message");
       const check_out_order_messages = document.getElementById(
@@ -172,9 +171,9 @@
 
       const welcomeMessage = (event, message) => {
         const welcome = document.createElement("li");
-        welcome.id = "welcome"
+        welcome.id = "welcome";
         welcome.textContent = message || event.message;
-        check_out_order_messages.appendChild(welcome)
+        check_out_order_messages.appendChild(welcome);
       };
 
       user_message.addEventListener("submit", function (e) {
@@ -182,7 +181,7 @@
 
         const user_input = document.getElementById("user_input");
 
-        if (user_input.value == "0") {
+        if (user_input.value === "0") {
           if (pending_order.length == 0) {
             checkOutOrderChat(event, `cancel order`, `no pending order`);
           }
@@ -196,31 +195,29 @@
             );
           }
           pending_order.splice(0, pending_order.length);
-        }
+        } else if (user_input.value == "1") {
+          const form = document.createElement("form");
+          form.id = "form";
 
-        if (user_input.value == "1") {
-          const form = document.createElement("form")
-          form.id = "form"
-
-          chat.insertBefore(form, chat.firstChild)
+          chat.insertBefore(form, chat.firstChild);
           const menu = document.createElement("ol");
           menu.id = "menu";
 
           const menu_content_1 = document.createElement("li");
           menu_content_1.id = "menu_content_1";
-          menu_content_1.innerText = "veggie spice chicken";
+          menu_content_1.innerText = "creamy tusan chicken";
 
           const menu_content_2 = document.createElement("li");
           menu_content_2.id = "menu_content_2";
-          menu_content_2.innerText = "italian chicken nuggets";
+          menu_content_2.innerText = "chicken pot pie";
 
           const menu_content_3 = document.createElement("li");
           menu_content_3.id = "menu_content_3";
-          menu_content_3.innerText = "itachi spice chicken";
+          menu_content_3.innerText = "chicken cacciatore";
 
           const menu_content_4 = document.createElement("li");
           menu_content_4.id = "menu_content_4";
-          menu_content_4.innerText = "chicken wings";
+          menu_content_4.innerText = "buffalo chicken pizza";
 
           menu.append(menu_content_1);
           menu.append(menu_content_2);
@@ -248,30 +245,49 @@
           form.append(button);
 
           form.addEventListener("submit", function (e) {
-        e.preventDefault();
+            e.preventDefault();
 
-        const order = document.getElementById("order");
-        const quantity = document.getElementById("quantity");
-        const cost = 9 * parseInt(quantity.value);
+            const menuObj = {
+              "creamy tusan chicken": "creamy tusan chicken",
+              "chicken pot pie": "chicken pot pie",
+              "chicken cacciatore": "chicken cacciatore",
+              "buffalo chicken pizza": "buffalo chicken pizza",
+            };
+            const order = document.getElementById("order");
+            const quantity = document.getElementById("quantity");
+            const cost = 9 * parseInt(quantity.value);
 
-        const data = {
-          eventName: "order_created",
-          order: order.value,
-          quantity: quantity.value,
-          order_cost: cost,
-        };
+            if (!menuObj.hasOwnProperty(order.value)) {
+              checkOutOrderChat(
+                event,
+                `${order.value}`,
+                `invalid request. that order is not available `
+              );
+            } else if (parseInt(quantity.value) < 1) {
+              checkOutOrderChat(
+                event,
+                `${quantity.value}`,
+                `invalid request. quantity can not be less than 1 `
+              );
+            } else {
+              const data = {
+                eventName: "order_created",
+                order: order.value,
+                quantity: quantity.value,
+                order_cost: cost,
+              };
 
-        sessionStorage.setItem("user_order", JSON.stringify(data));
+              sessionStorage.setItem("user_order", JSON.stringify(data));
 
-        console.log(sessionStorage.getItem("user_order"));
-        socket.emit("order_created", data, (response) => {
-          checkOutOrderChat(event, "place order", response.message);
-        });
+              console.log(sessionStorage.getItem("user_order"));
+              socket.emit("order_created", data, (response) => {
+                checkOutOrderChat(event, "place order", response.message);
+              });
 
-        pending_order.push(data);
-      });
-        }
-        if (user_input.value == "99") {
+              pending_order.push(data);
+            }
+          });
+        } else if (user_input.value == "99") {
           if (pending_order.length == 0) {
             checkOutOrderChat(
               event,
@@ -295,9 +311,7 @@
             );
           }
           pending_order.splice(0, pending_order.length);
-        }
-
-        if (user_input.value == "98") {
+        } else if (user_input.value == "98") {
           if (all_orders.length == 0) {
             checkOutOrderChat(
               event,
@@ -315,8 +329,7 @@
               );
             });
           }
-        }
-        if (user_input.value == "97") {
+        } else if (user_input.value == "97") {
           if (pending_order.length == 0) {
             checkOutOrderChat(
               event,
@@ -333,40 +346,14 @@
               }
             );
           }
+        } else {
+          checkOutOrderChat(
+            event,
+            `${user_input.value}`,
+            `invalid request. enter 1 to place an order, enter 99 to check out your order, enter 98 for your order history, enter 97 for your current order, enter 0 to cancel order `
+          );
         }
-
-        // if(!user_input.value == "1"||"0"||"99"||"98"||"97" ){
-        //   checkOutOrderChat(
-        //       event,
-        //       `${user_input.value}`,
-        //       `invalid request. enter 1 to place an order, enter 99 to check out your order, enter 98 for your order history, enter 97 for your current order, enter 0 to cancel order `
-        //     );
-        // }
       });
-
-      // form.addEventListener("submit", function (e) {
-      //   e.preventDefault();
-
-      //   const order = document.getElementById("order");
-      //   const quantity = document.getElementById("quantity");
-      //   const cost = 9 * parseInt(quantity.value);
-
-      //   const data = {
-      //     eventName: "order_created",
-      //     order: order.value,
-      //     quantity: quantity.value,
-      //     order_cost: cost,
-      //   };
-
-      //   sessionStorage.setItem("user_order", JSON.stringify(data));
-
-      //   console.log(sessionStorage.getItem("user_order"));
-      //   socket.emit("order_created", data, (response) => {
-      //     checkOutOrderChat(event, "place order", response.message);
-      //   });
-
-      //   pending_order.push(data);
-      // });
 
       window.addEventListener("load", () => {
         const name = prompt("Enter your name: ");
