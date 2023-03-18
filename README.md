@@ -13,6 +13,9 @@ socketIO
 * Run `npm install`
 
 # Run the Application
+* first comment the the index.html line 147 and uncomment the line 148 because you want run the app on your local server not an hosted server.
+![screenshot](./production.png)
+
 *Start the application by running `nodemon index.js` then visit the application on browser  http://localhost:5000
 
 * Enter 1-> to place an order (the bot will provide a form, there you enter an order and quantity according to menu ),99-> to check out order place,98-> to see the entire orders for the session,97-> to see your current order or 0-> to cancel order`
